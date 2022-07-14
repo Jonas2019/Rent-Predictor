@@ -10,6 +10,8 @@ from re import search
 from time import sleep
 import random
 
+# venv source: source venv/bin/activate
+
 
 def read_mongo(env_key):
     mongo_uri = 'mongodb+srv://JW:{}@cluster0.q4g0hww.mongodb.net/?retryWrites=true&w=majority'.format(
@@ -119,9 +121,9 @@ def add_geo_info(df):
     return df
 
 
-def write_to_mongo(df):
+def write_to_mongo(df, env_key):
     mongo_uri = 'mongodb+srv://JW:{}@cluster0.q4g0hww.mongodb.net/?retryWrites=true&w=majority'.format(
-        os.getenv('MONGODB_USR_PASSWORD'))
+        env_key)
     client = MongoClient(mongo_uri)
     collection = client.RentPredictorDatabase.RentPredictorCollection
     collection.insert_many(df.to_dict('records'))
@@ -133,7 +135,6 @@ def main():
     df['time'] = pd.to_datetime(df['time'])
     cutoff_time = df['time'].max()
     del df
-
     startingUrl = "https://vancouver.craigslist.org/search/apa?query=ubc&min_price=&max_price=&availabilityMode=0&sale_date=all+dates"
     HEADER = {
         'Access-Control-Allow-Origin': '*',
@@ -146,13 +147,13 @@ def main():
                           HEADER=HEADER, cutoff_time=cutoff_time)
     df = add_geo_info(df)
     df.to_csv('daily_data_frame.csv', index=False)
-    write_to_mongo(df)
+    write_to_mongo(df, os.getenv('MONGODB_USR_PASSWORD'))
 
 
 def write_from_local_csv(filename):
     df = pd.read_csv(filename)
     load_dotenv()
-    write_to_mongo(df)
+    write_to_mongo(df, os.getenv('MONGODB_USR_PASSWORD'))
 
 
 def check_newest_records():
@@ -175,6 +176,6 @@ def check_newest_records():
 
 
 if __name__ == '__main__':
-    main()
+    # main()
     # write_from_local_csv('daily_data_frame.csv')
-    # check_newest_records()
+    check_newest_records()
