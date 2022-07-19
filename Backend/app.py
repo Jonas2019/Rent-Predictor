@@ -1,5 +1,4 @@
-from multiprocessing.reduction import AbstractReducer
-from flask import Flask
+from flask import Flask, json
 from flask_pymongo import PyMongo
 from flask_cors import CORS
 import os
@@ -21,3 +20,7 @@ def index():
     res = utils.get_all_documents(mongo)
     res = res.drop(['_id'], axis=1)
     return res.to_json(orient="records")
+
+
+if __name__ == '__main__':
+    app.run()
