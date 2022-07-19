@@ -1,3 +1,4 @@
+from multiprocessing.reduction import AbstractReducer
 from flask import Flask
 from flask_pymongo import PyMongo
 from flask_cors import CORS
@@ -13,7 +14,6 @@ app.config["MONGO_URI"] = os.getenv('MONGODB_URI')
 mongo = PyMongo(app)
 
 # API Section
-# @app.route("/")
 
 
 @app.route("/")
